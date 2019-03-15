@@ -1,24 +1,28 @@
 module.exports = {
-  base: '/',
-  title: 'title-hbs',
+  base: '/vuepress-demo',
+  title: '前端矿工',
   description: 'test vuepress',
-  // head: ['script', { src: '/js/hello.js' }],
-  // host: '0.0.0.0',
-  // port: '8080',
-  dest: '../dist',
+  head: [
+    ['title', '前端矿工']
+  ],
+  host: '0.0.0.0',
+  port: '8080',
+  dest: 'dist',
   themeConfig: {
-    nav: [
+    repo: 'AFu-1993/vuepress-demo',
+    editLinks: true,
+    docsDir: 'docs',
+    editLinkText: '在 GitHub 上编辑此页',
+    lastUpdated: '上次更新',
+    sidebar: [
       {
-        text: 'Languages',
-        items: [
-          { text: 'baidu', link: 'www.baidu.com' },
-          { text: 'local', link: 'localhost:8080/' }
+        title: '关于',
+        collapsable: false,
+        children: [
+          ['about/', '简介'],
+          'about/skill'
         ]
       }
-    ],
-    sidebar: [
-      ['/', 'home'],
-      ['firstday/moning', 'fffffirst'],
     ]
   }
 }
