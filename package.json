@@ -1,0 +1,15 @@
+{
+  "scripts": {
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs"
+  },
+  "dependencies": {
+    "webpack-dev-middleware": "3.6.0"
+  },
+  "resolutions": {
+    "webpack-dev-middleware": "3.6.0"
+  },
+  "devDependencies": {
+    "vuepress": "^0.14.10"
+  }
+}
