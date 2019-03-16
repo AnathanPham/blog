@@ -1,5 +1,5 @@
 module.exports = {
-  base: '/vuepress-demo/',
+  base: '/resume/',
   title: '前端矿工',
   description: 'test vuepress',
   head: [
@@ -20,6 +20,13 @@ module.exports = {
         children: [
           ['about/', '简介'],
           'about/skill'
+        ]
+      },{
+        title:'数据结构',
+        collapsable: false,
+        children:[
+          ['data-structure/','介绍'],
+          'data-structure/section-1'
         ]
       }
     ]
