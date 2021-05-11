@@ -9,8 +9,9 @@
 - [React 合成事件](https://github.com/AnathanPham/blog/issues/23)
 
 ### Fiber
-- [ReactDOM.render做了什么？](https://github.com/AnathanPham/blog/issues/26)
+- [ReactDOM.render做了什么](https://github.com/AnathanPham/blog/issues/26)
+- [React如何更新Fiber树（虚拟DOM）](https://github.com/AnathanPham/blog/issues/27)
 - [React Context 原理](https://github.com/AnathanPham/blog/issues/25)
-- [Fiber 如何更新](https://github.com/AnathanPham/blog/issues/16)
+
 
 ### 调度
