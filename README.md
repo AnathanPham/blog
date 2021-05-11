@@ -21,4 +21,4 @@
 
 ## 算法
 
-- [快速排序](https://github.com/AnathanPham/blog/issues/24)
+- [快速排序](https://github.com/AnathanPham/blog/issues/14)
