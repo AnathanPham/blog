@@ -1,5 +1,7 @@
 # AnathanPham's blog
 
+内容皆为原创，如果对你有用请点star :p
+
 ## react 系列
 
 ### 合成事件
