@@ -20,7 +20,7 @@
 - 建设中
 
 ## 算法
-
+- [可视化排序](https://anathanpham.github.io/blog/)
 - [快速排序](https://github.com/AnathanPham/blog/issues/14)
 
 ## Web
