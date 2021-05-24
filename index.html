@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="input-area">
+        <input class="input" type="text" placeholder="输入元素个数" />
+        <p class="input-error"></p>
+        <button class="input-submit">确定</button>
+      </div>
+      <div class="show-area" style="position: relative">
+        <!-- 等待渲染待排序元素 -->
+      </div>
+    </div>
+
+    <script>
+      const inputEl = document.querySelector(".input");
+      const inputErrorEl = document.querySelector(".input-error");
+      const inputSubmitEl = document.querySelector(".input-submit");
+      const showAreaEl = document.querySelector(".show-area");
+      const AnaSort = (function createAnaSort() {
+        function isValidInputValue(count) {
+          const result = {
+            isValid: true,
+            errorMessage: "",
+          };
+          if (typeof count !== "number") {
+            result.isValid = false;
+            result.errorMessage = "输入值不是数字";
+          }
+          if (Number.isNaN(count)) {
+            result.isValid = false;
+            result.errorMessage = "输入值不是数字";
+          }
+          if (!Number.isFinite(count)) {
+            /* Number('Infinity') === Infinity */
+            result.isValid = false;
+            result.errorMessage = "输入值不是数字";
+          }
+          if (count < 1) {
+            result.isValid = false;
+            result.errorMessage = "输入值应不小于1";
+          }
+          if (count % 1 !== 0) {
+            result.isValid = false;
+            result.errorMessage = "输入值不是整数";
+          }
+          return result;
+        }
+        function createSortObjs(els, values) {
+          return els.map((el, index) => {
+            return {
+              translateX: 0,
+              el,
+              value: values[index],
+            };
+          });
+        }
+        function sleep(timeout) {
+          return new Promise((res) => {
+            setTimeout(() => res(), timeout);
+          });
+        }
+        function getMaxValueInArray(array) {
+          let max = array[0];
+          for (let i = 1; i < array.length; i++) {
+            if (array[i] > max) {
+              max = array[i];
+            }
+          }
+          return max;
+        }
+        return function AnaSort(inputEl, inputSubmitEl, showAreaEl, config) {
+          this.inputEl = inputEl;
+          this.inputSubmitEl = inputSubmitEl;
+          this.showAreaEl = showAreaEl;
+          this.inputErrorEl = config.inputErrorEl;
+          this.SORT_VALUE_RANGE = config.sortValueRange || 100;
+          this.DEFAULT_CONTAINER_WIDTH = config.defaultContainerWidth || 300;
+          this.DEFAULT_CONTAINER_HEIGHT = config.defaultContainerHeight || 300;
+          this.unitWidth = 0;
+          this.TIMEOUT = config.transitionTimeout || 300;
+          this.sortElClass =
+            config.sortElClass ||
+            "ana-sort-el-" + Math.random().toString(16).split(".")[1];
+          this.destroyCallbackQueue = null;
+          this.init = function init() {
+            const sortByBind = this.sort.bind(this);
+            this.inputSubmitEl.addEventListener("click", sortByBind);
+            this.addCallBack(() => {
+              this.inputSubmitEl.removeEventListener("click", sortByBind);
+            });
+          };
+          this.addCallBack = function addCallBack(cb) {
+            if (!this.destroyCallbackQueue) {
+              this.destroyCallbackQueue = {
+                value: cb,
+                next: null,
+              };
+              this.destroyCallbackQueue.next = this.destroyCallbackQueue;
+            } else {
+              const newCallbackNode = {
+                value: cb,
+                next: null,
+              };
+              newCallbackNode.next = this.destroyCallbackQueue.next;
+              this.destroyCallbackQueue.next = newCallbackNode;
+              this.destroyCallbackQueue = newCallbackNode;
+            }
+          };
+          this.destroy = function destroy() {
+            /* 清理，避免内存泄漏 */
+            const cbFirstNode =
+              this.destroyCallbackQueue && this.destroyCallbackQueue.next;
+            let currentNote = cbFirstNode;
+            if (currentNote) {
+              do {
+                try {
+                  currentNote.value();
+                } catch (e) {
+                  console.error(e);
+                }
+                currentNote = currentNote.next;
+              } while (cbFirstNode === currentNote);
+            }
+          };
+          this.sort = async function sort() {
+            try {
+              const TIMEOUT = this.TIMEOUT;
+              // 读取输入
+              const inputEl = this.inputEl;
+              const count = Number(inputEl.value);
+              const checkResult = isValidInputValue(count);
+              if (!checkResult.isValid) {
+                this.showError(checkResult.errorMessage);
+                return;
+              }
+              // 生成随机数组
+              const SORT_VALUE_RANGE = this.SORT_VALUE_RANGE;
+              const initArray = Array.from({ length: count }).map(() => {
+                return Math.floor(Math.random() * (SORT_VALUE_RANGE - 1)) + 1;
+              });
+              const sortEls = this.renderSortEls(initArray, showAreaEl);
+              const sortValues = [...initArray];
+              const sortElObjs = createSortObjs(sortEls, sortValues);
+              let sortedArrayLastElIndex = 0;
+              await sleep(TIMEOUT);
+              while (sortedArrayLastElIndex !== sortElObjs.length - 1) {
+                // 从未排序分区中选择一个元素
+                const currentSortElIndex = sortedArrayLastElIndex + 1;
+                const currentSortElObj = sortElObjs[currentSortElIndex];
+                const currentSortElValue = currentSortElObj.value;
+
+                let insertIndex = currentSortElIndex;
+                // 找到要插入的位置
+                while (insertIndex > 0) {
+                  const leftIndexOfCurrentEl = insertIndex - 1;
+                  if (
+                    sortElObjs[leftIndexOfCurrentEl].value <= currentSortElValue
+                  ) {
+                    break;
+                  } else {
+                    insertIndex--;
+                  }
+                }
+                // 移动
+                if (currentSortElIndex !== insertIndex) {
+                  let moveIndex = currentSortElIndex - 1;
+                  while (moveIndex >= insertIndex) {
+                    // 移动一个
+                    await this.moveElObj(moveIndex, moveIndex + 1, sortElObjs);
+                    moveIndex--;
+                  }
+                }
+                // 插入
+                await this.moveElObj(
+                  currentSortElIndex,
+                  insertIndex,
+                  sortElObjs,
+                  currentSortElObj
+                );
+                // 准备下一个待排序的元素
+                sortedArrayLastElIndex++;
+              }
+            } catch (error) {
+              this.showError(error.message);
+            }
+          };
+          this.renderSortEls = function renderSortEls(arr, container) {
+            const DEFAULT_WIDTH = this.DEFAULT_CONTAINER_WIDTH;
+            const DEFAULT_HEIGHT = this.DEFAULT_CONTAINER_HEIGHT;
+            const count = arr.length;
+            const containerSize = container.getBoundingClientRect();
+            let containerWidth = containerSize.width;
+            if (containerWidth < 1) {
+              containerWidth = DEFAULT_WIDTH;
+              container.style.width = DEFAULT_WIDTH + "px";
+            }
+            let containerHeight = containerSize.height;
+            if (containerHeight < 1) {
+              containerHeight = DEFAULT_HEIGHT;
+              container.style.height = DEFAULT_HEIGHT + "px";
+            }
+            const spaceCount = count + 1;
+            const totalCount = spaceCount + count;
+            const unitWidth = Math.floor(containerWidth / totalCount);
+            this.unitWidth = unitWidth
+            const unitMaxHeight = containerHeight;
+            const maxElHight = getMaxValueInArray(arr);
+            const elToContainerHeightRate =
+              unitMaxHeight /
+              maxElHight; /* 元素数值/最大元素数值=元素高度/容器高度 容器高度/最大元素数值=元素转容器高度比率 */
+            if (unitWidth < 2) {
+              throw new Error("容器宽度不足以放置" + count + "个元素");
+            }
+            const fragment = document.createDocumentFragment();
+            const els = [];
+            for (let i = 0; i < count; i++) {
+              const sortEl = document.createElement("div");
+              sortEl.style.backgroundColor = "green";
+              sortEl.style.width = unitWidth + "px";
+              sortEl.style.height = elToContainerHeightRate * arr[i] + "px";
+              sortEl.style.position = "absolute";
+              sortEl.style.bottom = "0px";
+              sortEl.style.left = i * 2 * unitWidth + unitWidth + "px";
+              sortEl.classList.add(this.sortElClass);
+              fragment.appendChild(sortEl);
+              els.push(sortEl);
+            }
+            container.innerHTML = "";
+            container.appendChild(fragment);
+
+            const style = document.createElement("style");
+            style.appendChild(document.createTextNode(""));
+            container.appendChild(style);
+            style.sheet.addRule(
+              "." + this.sortElClass,
+              "transition: transform 0.3s;"
+            );
+            return els;
+          };
+          this.moveElObj = async function moveElObj(
+            originIndex,
+            targetIndex,
+            sourceArray,
+            originEl
+          ) {
+            const startElObj = originEl || sourceArray[originIndex];
+            const preBackgroundColor = startElObj.el.style.backgroundColor;
+            startElObj.el.style.backgroundColor = "blue";
+            startElObj.translateX =
+              startElObj.translateX +
+              (targetIndex - originIndex) * 2 * this.unitWidth;
+            startElObj.el.style.transform =
+              "translateX(" + startElObj.translateX + "px)";
+            await sleep(this.TIMEOUT);
+            startElObj.el.style.backgroundColor = preBackgroundColor;
+            sourceArray[targetIndex] = startElObj;
+          };
+          this.showError = function showError(message) {
+            if (!this.inputErrorEl) {
+              return alert(message);
+            }
+            this.inputErrorEl.innerHTML = String(message);
+          };
+        };
+      })();
+      const anaSort = new AnaSort(inputEl, inputSubmitEl, showAreaEl, {
+        inputErrorEl,
+      });
+      anaSort.init();
+    </script>
+  </body>
+</html>
