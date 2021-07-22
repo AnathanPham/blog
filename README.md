@@ -25,4 +25,5 @@
 
 ## Web
 - [浏览器事件循环](https://github.com/AnathanPham/blog/issues/22)
+- [渲染性能优化](https://github.com/AnathanPham/blog/issues/32)
 
