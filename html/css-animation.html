@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- 
+        chrome devtools 解说视频 https://www.youtube.com/embed/VYyQv0CSZOE
+        6:45 讲解动画
+     -->
+    <button id="begin">begin</button>
+    <div id="move">
+      <style>
+        #move {
+          width: 100px;
+          height: 100px;
+          /* transform: translate3d(); */
+          background-color: orange;
+        }
+        .able-move {
+          animation: 4s linear 0s infinite alternate anim1;
+        }
+        @keyframes anim1 {
+          0% {
+            transform: translateX(0);
+          }
+          50% {
+            transform: translateY(100px);
+          }
+          100% {
+            transform: translate3d(100px, 100px, 0);
+          }
+        }
+      </style>
+    </div>
+    <script>
+      const beginBtn = document.querySelector("#begin")
+      const moveEl = document.querySelector("#move")
+      beginBtn.addEventListener("click", move)
+      function move() {
+        moveEl.classList.add("able-move")
+      }
+    </script>
+  </body>
+</html>
