@@ -11,8 +11,25 @@
         chrome devtools 解说视频 https://www.youtube.com/embed/VYyQv0CSZOE
         6:45 讲解动画
      -->
-    <button id="begin">begin</button>
-    <div id="move">
+    <style>
+      body {
+        color: #000000;
+        font-size: 14px;
+      }
+    </style>
+    <div>
+      <h2>普通动画</h2>
+      <button id="begin">begin</button>
+      <div class="move-wrap">
+        <style>
+          .move-wrap {
+            width: 200px;
+            height: 200px;
+            border: 5px solid seagreen;
+          }
+        </style>
+        <div id="move"></div>
+      </div>
       <style>
         #move {
           width: 100px;
@@ -25,24 +42,181 @@
         }
         @keyframes anim1 {
           0% {
-            transform: translateX(0);
+            transform: translate3d(0, 0, 0);
+          }
+          25% {
+            transform: translate3d(0, 50px, 0);
           }
           50% {
-            transform: translateY(100px);
+            transform: translate3d(50px, 50px, 0);
+          }
+          75% {
+            transform: translate3d(50px, 100px, 0);
           }
           100% {
             transform: translate3d(100px, 100px, 0);
           }
         }
       </style>
+      <script>
+        const beginBtn = document.querySelector("#begin")
+        const moveEl = document.querySelector("#move")
+        beginBtn.addEventListener("click", move)
+        function move() {
+          moveEl.classList.add("able-move")
+        }
+      </script>
     </div>
-    <script>
-      const beginBtn = document.querySelector("#begin")
-      const moveEl = document.querySelector("#move")
-      beginBtn.addEventListener("click", move)
-      function move() {
-        moveEl.classList.add("able-move")
-      }
-    </script>
+    <hr />
+    <div>
+      <h2>transition</h2>
+      <button id="begin2">begin2</button>
+      <div id="move2"></div>
+      <div id="move2-2"></div>
+      <style>
+        #move2 {
+          border-radius: 50%;
+          width: 100px;
+          height: 100px;
+          background-color: aquamarine;
+        }
+        #move2-2 {
+          position: relative;
+          border-radius: 5px;
+          width: 100px;
+          height: 100px;
+          background-color: blueviolet;
+        }
+        #move2-2::before {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 20px;
+          height: 20px;
+          background-color: red;
+          border-radius: 50%;
+          display: block;
+          content: "";
+        }
+        .trans1 {
+          transform: skewX(90deg);
+          transition: 2s transform;
+        }
+        .trans1_2 {
+          transform: rotateZ(300deg) perspective(17px);
+          transition: 2s transform;
+        }
+      </style>
+      <script>
+        const begin2Btn = document.querySelector("#begin2")
+        const move2El = document.querySelector("#move2")
+        const move2_2El = document.querySelector("#move2-2")
+        begin2Btn.addEventListener("click", move2)
+        function move2() {
+          move2El.classList.add("trans1")
+          move2_2El.classList.add("trans1_2")
+        }
+      </script>
+    </div>
+    <hr />
+    <div>
+      <h2>JS阻塞动画吗？</h2>
+      <button id="begin3">begin3</button>
+      <button id="begin3-2">阻塞2秒</button>
+      <div id="move3">动画</div>
+      <div id="move3-2">relative left</div>
+      <style>
+        #move3 {
+          width: 100px;
+          height: 100px;
+          background-color: orange;
+          border-radius: 5px;
+        }
+        #move3-2 {
+          width: 100px;
+          height: 100px;
+          background-color: cadetblue;
+          border-radius: 5px;
+          left: 0px;
+          position: relative;
+        }
+        .able-move3 {
+          animation: 4s linear 0s infinite alternate anim3;
+        }
+        .able-move3_2 {
+          transition: 5s left;
+          left: 200px !important;
+        }
+        @keyframes anim3 {
+          0% {
+            transform: translate3d(0, 0, 0);
+          }
+          25% {
+            transform: translate3d(0, 50px, 0);
+          }
+          50% {
+            transform: translate3d(50px, 50px, 0);
+          }
+          75% {
+            transform: translate3d(50px, 100px, 0);
+          }
+          100% {
+            transform: translate3d(100px, 100px, 0);
+          }
+        }
+      </style>
+      <script>
+        const beginBtn3 = document.querySelector("#begin3")
+        const beginBtn3_2 = document.querySelector("#begin3-2")
+        const moveEl3 = document.querySelector("#move3")
+        const moveEl3_2 = document.querySelector("#move3-2")
+        beginBtn3.addEventListener("click", move3)
+        beginBtn3_2.addEventListener("click", makeBlock)
+        function move3() {
+          moveEl3.classList.add("able-move3")
+          moveEl3_2.classList.add("able-move3_2")
+
+          //   TODO:当初认为这块代码，能够证明JS阻塞了动画，但结论似乎是错误了
+          //   const beginBtnText = beginBtn3.textContent
+          //   beginBtn3.textContent = "阻塞?中"
+          //   moveEl3.classList.add("able-move3")
+          //   const startTime = Date.now()
+          //   while (Date.now() < startTime + 2000) {}
+          //   console.log("block3:停止阻塞")
+          //   beginBtn3.textContent = beginBtnText
+        }
+        function makeBlock() {
+          const beginBtnText = beginBtn3_2.textContent
+          beginBtn3_2.textContent = "阻塞中"
+          const startTime = Date.now()
+          while (Date.now() < startTime + 2000) {}
+          console.log("block3: 停止阻塞(makeBlock)")
+          beginBtn3_2.textContent = beginBtnText
+        }
+      </script>
+    </div>
+    <div id="utils">
+      同时点击所有按钮
+      <style>
+        #utils {
+          position: fixed;
+          bottom: 5%;
+          right: 5%;
+          background-color: rgba(0, 0, 0, 0.5);
+          color: #fff;
+          border-radius: 10px;
+          padding: 10px;
+        }
+      </style>
+      <script>
+        const utils = document.querySelector("#utils")
+        utils.addEventListener("click", function () {
+          const allButtons = document.querySelectorAll("button")
+          Array.from(allButtons).map((btn) => {
+            btn.click()
+          })
+        })
+      </script>
+    </div>
   </body>
 </html>
