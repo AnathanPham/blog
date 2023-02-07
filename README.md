@@ -9,7 +9,7 @@
 - [React的纯度（纯函数）--Keeping Components Pure读后感](https://github.com/AnathanPham/blog/issues/86)
 
 
-## react 源码
+## React 源码
 
 ### 合成事件
 
