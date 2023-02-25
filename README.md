@@ -3,7 +3,7 @@
 内容皆为原创，如果对你有用请点star :p
 
 ## React 相关
-- [🚀深入浅出Redux](https://github.com/AnathanPham/blog/issues/90)
+- [深入浅出Redux](https://github.com/AnathanPham/blog/issues/90)🚀
 - [深入浅出Immer](https://github.com/AnathanPham/blog/issues/85)
 - [我对于自定义Hooks的浅层理解](https://github.com/AnathanPham/blog/issues/87)
 - [React的纯度（纯函数）--Keeping Components Pure读后感](https://github.com/AnathanPham/blog/issues/86)
